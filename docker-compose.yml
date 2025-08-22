@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  nginx:
+    build: src/nginx/.
+    container_name: inception_nginx
+    #"<host_port>:<container_port>".
+    ports:
+      - "8080:80"
+
+# services:
+#   nginx:
+#     build: ./src/nginx
+#     container_name: inception_nginx
+#     ports:
+#       - "8443:443"   # local dev without sudo; for grading change to 443:443
+#     networks:
+#       - inception_net
+
+# networks:
+#   inception_net:
