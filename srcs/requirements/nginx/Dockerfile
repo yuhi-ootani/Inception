@@ -1,21 +1,29 @@
 
-#Start from a small, Debian 12 base image.
+#https://www.debian.org/releases/
 FROM debian:bookworm-slim
 
-#apt-get update — refresh the local APT package index lists.
+#apt-get update — refresh the local APT package index lists and knows the latest available versions of packages.
 #apt-get install -y --no-install-recommends nginx ca-certificates — install NGINX and the CA trust bundle; auto-yes; skip optional “recommended” packages.
+#-p = parents, creates the full path if missing, and does not complain if the folder already exists.
+
 #rm -rf /var/lib/apt/lists/* — delete cached APT index files to reduce the final image size.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends nginx ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y nginx \
+    && mkdir -p /etc/nginx/ssl \
+    && openssl req -x509 -nodes \
+    && -keyout /etc/nginx/ssl/inception.key \
+    && -out /etc/nginx/ssl/inception.crt \
+    && -subj "/C=JP/ST=Tokyo/L=Shujuku/O=42Tokyo/OU=Student/CN=<login>.42tokyo.jp/UID=<login>" 
+# --no-install-recommends nginx ca-certificates \
+#     && rm -rf /var/lib/apt/lists/*
 
-#Purpose: Adds metadata to the image saying “this container listens on port 80 inside the container.”
-EXPOSE 80
+# #Purpose: Adds metadata to the image saying “this container listens on port 80 inside the container.”
+# EXPOSE 80
 
-# run nginx in the foreground instead of in the background
-CMD ["nginx", "-g", "daemon off;"]
+# # run nginx in the foreground instead of in the background
+# CMD ["nginx", "-g", "daemon off;"]
 
-# FROM debian:bookworm-slim
+
 
 # RUN apt-get update \
 #  && apt-get install -y --no-install-recommends nginx openssl ca-certificates \
