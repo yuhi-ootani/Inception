@@ -1,84 +1,91 @@
-#Docker Compose version v2.38.2
+# #Docker Compose version v2.38.2
+
+# services:
+#   # nginx:
+#   #   build: src/nginx/.
+#   #   container_name: inception_nginx
+#   #   #"<host_port>:<container_port>".
+#   #   ports:
+#   #     - "8080:80"
+
+#   #The name of the service.
+#   mariadb:
+#     #https://mariadb.org/mariadb/all-releases/
+
+#     image: mariadb:11
+#     #mariadb(persists) /var/lib/mysql(fixed and erased when close)
+#     volumes:
+#       - mariadb_data:/var/lib/mysql
+#     environment:
+#       #required
+#       MYSQL_ROOT_PASSWORD: mysql_root_pass
+#       #optional
+#       MYSQL_DATABASE: db_name
+#       MYSQL_USER: user_name
+#       MYSQL_PASSWORD: user_pass
+#     # Restart policy: always restart the container if it accidentally stops
+#     restart: always
+#     networks:
+#       - inception
+#   #
+
+
+
+#   wordpress:
+#     image: wordpress:php8.2-fpm
+
+#     # WordPress core PHP files (unless you bake them into the image)
+#     # wp-content/
+#     # uploads/ (media you upload: images, PDFs, videos)
+#     # themes/ (active and installed themes)
+#     # plugins/ (active and installed plugins)
+#     # mu-plugins/ (must-use plugins, if any)
+#     # plugin/theme caches or compiled assets
+#     volumes:
+#       - wordpress_data:/var/www/html
+
+#     depends_on:
+#       - mariadb
+
+#     environment:
+#       WORDPRESS_DB_HOST: mariadb:3306
+#       WORDPRESS_DB_NAME: db_name
+#       WORDPRESS_DB_USER: user_name
+#       WORDPRESS_DB_PASSWORD: user_pass
+
+#     restart: always
+
+#     networks:
+#       - inception
+#   #
+
+
+
+#   nginx:
+#     image: nginx:alpine
+#     depends_on:
+#       - wordpress
+#     ports:
+#       - "8080:80"
+#     volumes:
+#       - ./src/nginx:/etc/nginx/conf.d
+#       - wordpress_data:/var/www/html:ro
+#     restart: always
+#     networks:
+#       - inception
+
+# volumes:
+#   mariadb_data:
+#   wordpress_data:
+
+
+# networks:
+#   inception:
+#     driver: bridge
+
 
 services:
-  # nginx:
-  #   build: src/nginx/.
-  #   container_name: inception_nginx
-  #   #"<host_port>:<container_port>".
-  #   ports:
-  #     - "8080:80"
-
-  #The name of the service.
-  mariadb:
-    #https://mariadb.org/mariadb/all-releases/
-
-    image: mariadb:11
-    #mariadb(persists) /var/lib/mysql(fixed and erased when close)
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    environment:
-      #required
-      MYSQL_ROOT_PASSWORD: mysql_root_pass
-      #optional
-      MYSQL_DATABASE: db_name
-      MYSQL_USER: user_name
-      MYSQL_PASSWORD: user_pass
-    # Restart policy: always restart the container if it accidentally stops
-    restart: always
-    networks:
-      - inception
-  #
-
-
-
-  wordpress:
-    image: wordpress:php8.2-fpm
-
-    # WordPress core PHP files (unless you bake them into the image)
-    # wp-content/
-    # uploads/ (media you upload: images, PDFs, videos)
-    # themes/ (active and installed themes)
-    # plugins/ (active and installed plugins)
-    # mu-plugins/ (must-use plugins, if any)
-    # plugin/theme caches or compiled assets
-    volumes:
-      - wordpress_data:/var/www/html
-
-    depends_on:
-      - mariadb
-
-    environment:
-      WORDPRESS_DB_HOST: mariadb:3306
-      WORDPRESS_DB_NAME: db_name
-      WORDPRESS_DB_USER: user_name
-      WORDPRESS_DB_PASSWORD: user_pass
-
-    restart: always
-
-    networks:
-      - inception
-  #
-
-
-
   nginx:
-    image: nginx:alpine
-    depends_on:
-      - wordpress
+    build: ./requirements/nginx
     ports:
-      - "8080:80"
-    volumes:
-      - ./src/nginx:/etc/nginx/conf.d
-      - wordpress_data:/var/www/html:ro
-    restart: always
-    networks:
-      - inception
-
-volumes:
-  mariadb_data:
-  wordpress_data:
-
-
-networks:
-  inception:
-    driver: bridge
+      - "443:443"
