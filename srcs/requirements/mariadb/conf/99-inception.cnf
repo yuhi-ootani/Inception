@@ -1,0 +1,11 @@
+# /etc/mysql/mariadb.conf.d/99-inception.cnf
+
+# Daemon = long-running DB server (mariadbd/mysqld); listens on 3306/socket and handles connections. In Docker it runs in the foreground.
+[mysqld]
+
+# Listen on all IPv4 interfaces (not just localhost) so the WordPress container
+bind-address = 0.0.0.0
+
+# COMMAND to check: ss -ltn | grep 3306
+# port = 3306  # default
+

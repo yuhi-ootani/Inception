@@ -1,0 +1,56 @@
+
+FROM debian:bookworm-slim
+
+RUN apt-get update
+
+# RUN apt-get install -y wget 
+
+# curl: Needed to download WordPress, plugins, and especially wp-cli.
+# ca-certificates: Ensures your container can validate HTTPS certificates. Without this, curl or wp-cli can’t fetch from secure websites
+# php-mysql: It provides the necessary functions for PHP code to connect to, query, and manage data in a MySQL or MariaDB database.
+# php-cli: Command-line PHP interpreter. Needed if you run PHP scripts by wp-cli.
+# mariadb-client: Provides the mysql/mariadb command to connect from WordPress container to your DB container
+# php-mbstring: PHP Multibyte String extension to support Japanese
+RUN apt-get install -y php-fpm \
+    curl \
+    ca-certificates \
+    php-mysql \ 
+    php-cli \
+    php-mbstring \
+    mariadb-client
+
+# edit the PHP-FPM configuration file with sed command
+# sed: stream editor, used for in-place text replacement in files.
+# -r: powerful and flexible system for pattern matching
+# -i: edit the file in place
+
+# s|pattern|replacement| → substitute matching text.
+# ^ → beginning of the line
+# ;? → an optional semicolon (; may appear once or not at all)
+# .* → match any character (.) zero or more times (*)
+
+# change the port to listen 9000 (default is /run/php/php8.2-fpm.sock which is a local socket)
+RUN sed -ri 's|^;?listen = .*|listen = 0.0.0.0:9000|' /etc/php/*/fpm/pool.d/www.conf
+
+# change not to clearn the env (default is commneted-out)
+RUN sed -ri 's|^;?clear_env = .*|clear_env = no|' /etc/php/*/fpm/pool.d/www.conf
+
+# make the directory to download Wordpress
+RUN mkdir -p /var/www42/html42 
+
+# Set ownership to the web user (user:group) so PHP-FPM/Nginx can read/write.
+# Why www-data? Low-privilege default user on Debian for Nginx/PHP-FPM.
+RUN chown -R www-data:www-data /var/www42
+
+# WP-CLI program packaged as a .phar file. (-L follows redirects)
+# wp-cli: e official Command-Line Interface for WordPress, allowing you to manage your entire WordPress installation from the terminal without using a web browser.
+RUN curl -L -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x /usr/local/bin/wp
+
+COPY tools/wp_entrypoint.sh /usr/local/bin/wp_entrypoint.sh
+RUN chmod +x /usr/local/bin/wp_entrypoint.sh
+
+ENTRYPOINT [ "wp_entrypoint.sh" ]
+
+# php-fpm: defaults to background → run with -F (or set daemonize = no)
+CMD ["/usr/sbin/php-fpm8.2", "-F"]

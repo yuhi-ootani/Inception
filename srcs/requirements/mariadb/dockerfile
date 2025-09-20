@@ -1,0 +1,23 @@
+
+FROM debian:bookworm-slim
+
+RUN apt-get update
+
+# automatically runs the mariadb-install-db
+RUN apt-get install -y mariadb-server 
+
+
+
+# add an original configuration file 
+# Because MariaDB loads mariadb.conf.d files in name order, using 99-… makes your file load last so it overrides earlier defaults like 50-server.cnf.
+COPY conf/99-inception.cnf /etc/mysql/mariadb.conf.d/99-inception.cnf
+
+# Standard directory in Linux for user-installed executables. (included in the system $PATH)
+COPY tools/db_entrypoint.sh /usr/local/bin/db_entrypoint.sh
+RUN chmod +x /usr/local/bin/db_entrypoint.sh
+
+ENTRYPOINT [ "db_entrypoint.sh" ]
+
+# mysqld: defaults to foreground
+CMD ["mysqld", "--user=mysql"]
+

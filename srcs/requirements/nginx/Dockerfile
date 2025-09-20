@@ -11,6 +11,7 @@ RUN apt-get update
 RUN apt-get install -y nginx openssl
 
 # -p = parents, creates the full path if missing, and does not complain if the folder already exists.
+# why ect folder: everything that didn't fit elsewhere
 RUN mkdir -p /etc/nginx/ssl 
 
 # openssl: The command-line tool for working with cryptography (keys, certificates, signing, encryption)
@@ -25,7 +26,6 @@ RUN  openssl req -x509 -nodes -newkey rsa:2048 \
     -keyout /etc/nginx/ssl/inception.key \
     -out /etc/nginx/ssl/inception.crt \
     -subj "/C=JP/ST=Tokyo/L=Shinjuku/O=42Tokyo/OU=Student/CN=oyuhi.42tokyo.jp/UID=oyuhi" 
-#-newkey rsa:2048 -days 365 
 
 # past the original inception configuratoin file to the nginx
 COPY conf/inception.conf /etc/nginx/conf.d/default.conf
