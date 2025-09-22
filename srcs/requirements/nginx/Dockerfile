@@ -22,10 +22,12 @@ RUN mkdir -p /etc/nginx/ssl
 # -keyout: save the generated private key to the path
 # -out: saves the generated (self-signed) -x509 format certificate to the path
 # -subj: provides all certificate subject details (country, state, org, common name, etc.) non-interactively in one string.
+# -addext: tells OpenSSL to embed a Subject Alternative Name (SAN) extension in the certificate, making it valid for the domain oyuhi.42.fr, the domain localhost, and the IP 127.0.0.1.
 RUN  openssl req -x509 -nodes -newkey rsa:2048 \
     -keyout /etc/nginx/ssl/inception.key \
     -out /etc/nginx/ssl/inception.crt \
-    -subj "/C=JP/ST=Tokyo/L=Shinjuku/O=42Tokyo/OU=Student/CN=oyuhi.42tokyo.jp/UID=oyuhi" 
+    -subj "/C=JP/ST=Tokyo/L=Shinjuku/O=42Tokyo/OU=Student/CN=oyuhi.42.fr" \
+    -addext "subjectAltName=DNS:oyuhi.42.fr,DNS:localhost,IP:127.0.0.1"
 
 # past the original inception configuratoin file to the nginx
 COPY conf/inception.conf /etc/nginx/conf.d/default.conf
