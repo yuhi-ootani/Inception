@@ -28,7 +28,7 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
 # mariadb-install-db → initializes the MariaDB data directory by creating the system tables.
 # --user=mysql → ensure all files are owned by the mysql user so the server can access them.
 # --datadir=/var/lib/mysql → specify where to create the system tables (the MariaDB data directory).
-mariadb-install-db --user=mysql --datadir=/var/lib/mysql 
+  mariadb-install-db --user=mysql --datadir=/var/lib/mysql 
 
 
 
@@ -82,8 +82,8 @@ EOF
 # mysqladmin → the administrative client. after finishing initialization shutdown the mariadb
 mysqladmin --protocol=SOCKET --socket="$SOCK" -uroot -p"${MARIADB_ROOT_PASSWORD}" shutdown
 
-
 fi
+
 
 # replaced by CMD in the dockerfile
 exec "$@"

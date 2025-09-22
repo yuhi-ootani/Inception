@@ -9,11 +9,11 @@ services:
     networks:
       - inception
     # This policy restarts the container automatically if it stops for any reason, except when you intentionally stop it with docker stop.
-    restart: unless-stopped
+    # restart: unless-stopped
     #"<host_port>:<container_port>" :port mapping configuration. It instructs Docker to forward network traffic from the host machine to the container.
     # need to mount for searching the index.php (:ro is read only)
     volumes:
-      - /home/oyuhi/data/wp_volume:/var/www42/html42:ro
+      - wp_volume:/var/www42/html42:ro
     ports:
       - "443:443"
       # depends_on sets startup order between services.
@@ -27,10 +27,10 @@ services:
       - .env
     networks:
       - inception
-    restart: unless-stopped
+    # restart: unless-stopped
     # volume(sourse) : target(container)
     volumes:
-      - /home/oyuhi/data/wp_volume:/var/www42/html42
+      - wp_volume:/var/www42/html42
     # !!depends_on does not wait until the database is ready
     depends_on:
       - mariadb
@@ -42,15 +42,26 @@ services:
       - .env
     networks:
       - inception
-    restart: unless-stopped
+    # restart: unless-stopped
     # volume(sourse) : target(container)
     volumes:
-      - /home/oyuhi/data/db_volume:/var/lib/mysql
+      - db_volume:/var/lib/mysql
 
-# You may not need
-# volumes:
-#   - /home/oyuhi/data/wp_volume:/var/www42/html42
-#   - /home/oyuhi/data/db_volume:/var/lib/mysql
+# opts & o: option
+volumes:
+  wp_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/oyuhi/data/wp_volume
+
+  db_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/oyuhi/data/db_volume
 
 # networks: inception: at the bottom is just the definition of the network
 networks:
