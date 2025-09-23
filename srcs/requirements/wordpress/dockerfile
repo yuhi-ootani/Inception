@@ -11,10 +11,10 @@ RUN apt-get update
 # php-cli: Command-line PHP interpreter. Needed if you run PHP scripts by wp-cli.
 # mariadb-client: Provides the mysql/mariadb command to connect from WordPress container to your DB container
 # php-mbstring: PHP Multibyte String extension to support Japanese
-RUN apt-get install -y php-fpm \
+RUN apt-get install -y --no-install-recommends php-fpm \
     curl \
     ca-certificates \
-    php-mysql \ 
+    php-mysql \
     php-cli \
     php-mbstring \
     mariadb-client

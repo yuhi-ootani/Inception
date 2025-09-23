@@ -30,10 +30,13 @@ port="${WORDPRESS_DB_HOST##*:}"
 # if there is not port, asssign default mariadb port
 if [ "$host" = "$port" ]; then port=3306; fi
 
+sleep 3
+
 for i in $(seq 1 60); do
     # The mariadb client is a short-lived process.
     # -e"SELECT 1" "$WORDPRESS_DB_NAME": runs a quick SQL query SELECT 1 on the specified database to check if the database server is running and can process requests.
-    if mariadb -h"$host" -P"$port" -u"$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" -e"SELECT 1" "$WORDPRESS_DB_NAME" > /dev/null 2>&1; then
+    # if mariadb --protocol=TCP -h "$host" -P "$port" -u "$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" -D "$WORDPRESS_DB_NAME" -e "SELECT 1" > /dev/null 2>&1; then
+    if mariadb --protocol=TCP -h "$host" -P "$port" -u "$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" -D "$WORDPRESS_DB_NAME" -e "SELECT 1"; then
         echo "Mariadb is ready."
         break
     else
@@ -95,7 +98,7 @@ if [ ! -f "$WP_PATH/wp-config.php" ]; then
     chown -R www-data:www-data "$WP_PATH"
     echo "WordPress installed."
 else
-  echo "Existing WordPress detected. Skipping install."
+  echo "Existing WordPress detected. Skiping install."
 fi
     
 

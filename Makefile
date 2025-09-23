@@ -16,17 +16,33 @@ WP_VOLUME_DIR = /home/oyuhi/data/wp_volume
 
 all: up
 
-data:
-	mkdir -p "$(DB_VOLUME_DIR)" "$(WP_VOLUME_DIR)"
-
-build:
-	$(COMPOSE) build 
 
 # -d: Run containers in the background (detached mode)
 # --build: rebuild the images before starting container
-up : 
-	$(COMPOSE) up -d --build
+up : data 
+	$(COMPOSE) up -d 
 
+rebuild : data
+	$(COMPOSE) build --parallel
+	$(COMPOSE) up -d
+
+build:
+	$(COMPOSE) build --parallel
+
+wp-rebuild:             # rebuild just wordpress, don’t bounce deps
+	$(COMPOSE) build wordpress
+	$(COMPOSE) up -d --no-deps wordpress
+
+db-rebuild:
+	$(COMPOSE) build mariadb
+	$(COMPOSE) up -d --no-deps mariadb
+
+nginx-rebuild:
+	$(COMPOSE) build nginx
+	$(COMPOSE) up -d --no-deps nginx
+
+data:
+	mkdir -p "$(DB_VOLUME_DIR)" "$(WP_VOLUME_DIR)"
 
 start :
 	$(COMPOSE) start
@@ -46,7 +62,7 @@ ls:
 	docker image ls 
 
 logs:
-	$(COMPOSE) logs --tail=400
+	$(COMPOSE) logs --tail=500
 
 stop :
 	$(COMPOSE) stop
@@ -65,11 +81,12 @@ clean: down
 
 # -r: recursive -f: force
 fclean: clean
-	-docker volume rm $(docker volume ls -q)
-# 	-rm -rf "$(DB_VOLUME_DIR)" "$(WP_VOLUME_DIR)"
+# 	-docker volume rm $(docker volume ls -q)
+	-sudo rm -rf "$(DB_VOLUME_DIR)" "$(WP_VOLUME_DIR)"
 # 	-docker run --rm -v $(DB_VOLUME_DIR):/mnt alpine sh -lc 'rm -rf /mnt/* /mnt/.* 2>/dev/null || true'
 # 	-docker run --rm -v $(WP_VOLUME_DIR):/mnt alpine sh -lc 'rm -rf /mnt/* /mnt/.* 2>/dev/null || true'
 	-mkdir -p "$(DB_VOLUME_DIR)" "$(WP_VOLUME_DIR)"
+	-rm /run/init.sql
 
 re: fclean up
 
