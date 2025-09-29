@@ -73,7 +73,7 @@ stop :
 
 # remove also leftover containers from this project not in the current YAML.
 down :
-	$(COMPOSE) down --remove-orphans
+	$(COMPOSE) down --remove-orphans -v
 
 # $$: to pass a literal $ -q: only ID
 rmi :
