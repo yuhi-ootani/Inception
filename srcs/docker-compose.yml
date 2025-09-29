@@ -9,7 +9,7 @@ services:
     networks:
       - inception
     # This policy restarts the container automatically if it stops for any reason, except when you intentionally stop it with docker stop.
-    # restart: unless-stopped
+    restart: unless-stopped
     #"<host_port>:<container_port>" :port mapping configuration. It instructs Docker to forward network traffic from the host machine to the container.
     # need to mount for searching the index.php (:ro is read only)
     volumes:
@@ -27,7 +27,7 @@ services:
       - .env
     networks:
       - inception
-    # restart: unless-stopped
+    restart: unless-stopped
     # volume(sourse) : target(container)
     volumes:
       - wp_volume:/var/www42/html42
@@ -42,7 +42,7 @@ services:
       - .env
     networks:
       - inception
-    # restart: unless-stopped
+    restart: unless-stopped
     # volume(sourse) : target(container)
     volumes:
       - db_volume:/var/lib/mysql

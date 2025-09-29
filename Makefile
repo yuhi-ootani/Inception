@@ -5,6 +5,7 @@ COMPOSE_FILE := srcs/docker-compose.yml
 ENV_FILE := srcs/.env
 WORDPRESS := wordpress
 MARIADB := mariadb
+NGINX := nginx
 
 # -p: "project name". Docker Compose groups all resources
 COMPOSE = docker compose -p $(NAME) -f $(COMPOSE_FILE) --env-file $(ENV_FILE)
@@ -56,7 +57,10 @@ wp:
 	$(COMPOSE) exec $(WORDPRESS) bash
 
 db:
-	$(COMPOSE) exec $(MARIADB) bash
+	$(COMPOSE) exec $(MARIADB) bash -c "mariadb -uroot -p"
+
+nginx: 
+	$(COMPOSE) exec $(NGINX) bash
 
 ls: 
 	docker image ls 
@@ -90,8 +94,21 @@ fclean: clean
 
 re: fclean up
 
+# curl: command-line tool for trasferring data to or from server.
+# -I: only request http head not a content of the web page
+# -v: provides detailed information about entire process
+# -k : allow self-signed connection
+tls:
+	curl -Iv https://oyuhi.42.fr -k
 
-.PHONY: all data build up start ps wp db ls logs stop down rmi clean fclean re 
+#ss -lntp
+port:
+	docker port nginx42
+
+socket:
+	$(COMPOSE) exec nginx ss -lntp
+
+.PHONY: all data build up start ps wp db nignx ls logs stop down rmi clean fclean re tls port
 
 
 
